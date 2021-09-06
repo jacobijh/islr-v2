@@ -1,0 +1,97 @@
+---
+title: "ISLR Chapter 2"
+author: "John Jacobi"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+library(ISLR2)
+```
+
+
+## Question 1
+
+### A
+
+A flexible model will perform better.
+
+### B
+
+An inflexible model will perform better. A flexible model is likely to overfit on small amounts of data.
+
+### C
+
+A flexible model will perform better.
+
+### D
+
+An inflexible model will perform better.
+
+## Question 2
+
+### A
+
+A regression model focused on inference. n = 500, p = 3
+
+### B
+
+A classification model focused on prediction. n = 20, p = 13
+
+### C
+
+A regression model focused on prediction. n = 52, p = 3
+
+## Question 3
+
+## Question 4
+
+## Question 5
+
+## Question 6
+
+## Question 7
+
+## Question 8
+
+```{r}
+
+## A
+college <- read_csv('data/College.csv') %>% rename(School = "...1")
+
+## B
+
+# Skipped
+
+## C
+
+# i
+summary(college %>% select(-School))
+
+# ii
+pairs(college %>% select(3:12))
+
+# iii 
+ggplot(data = college, aes(x = Private, y = Outstate)) +
+  geom_boxplot() +
+  theme_minimal()
+
+# iv
+college %>% 
+  mutate(Elite = if_else(Top10perc > 50, "Yes", "No")) %>%
+  ggplot(aes(x = Elite, y = Outstate)) +
+  geom_boxplot() +
+  theme_minimal()
+
+# v
+college %>%
+  select(Top10perc, Room.Board, PhD, Grad.Rate) %>%
+  pivot_longer(cols = 1:4) %>%
+  ggplot(aes(x = value)) +
+  geom_bar() +
+  facet_wrap(~name, scales = "free") +
+  theme_minimal()
+```
+
+
+
