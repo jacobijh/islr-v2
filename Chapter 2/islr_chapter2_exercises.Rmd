@@ -93,5 +93,19 @@ college %>%
   theme_minimal()
 ```
 
+## Question 9
 
+```{r}
+pairs(Auto)
+```
+
+## QUestion 10
+
+```{r}
+pairs(Boston)
+```
+
+```{r}
+summary(Boston)
+```
 
