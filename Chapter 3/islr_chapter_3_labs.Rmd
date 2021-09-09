@@ -1,0 +1,162 @@
+---
+title: "ISLR: Chapter 3 Labs"
+output: html_notebook
+---
+
+```{r}
+library(ISLR2)
+library(tidymodels)
+```
+## 3.6.2
+
+```{r}
+head(Boston)
+```
+
+```{r}
+lm_spec <- linear_reg() %>%
+  set_mode("regression") %>%
+  set_engine("lm")
+
+lm_spec
+```
+```{r}
+lm_fit <- lm_spec %>%
+  fit(medv ~ lstat, data = Boston)
+
+lm_fit
+```
+```{r}
+tidy(lm_fit)
+```
+
+```{r}
+glance(lm_fit)
+```
+
+```{r}
+confint(lm_fit %>% pluck("fit"))
+```
+
+```{r}
+lm_fit %>%
+  predict(new_data = Boston)
+```
+
+```{r}
+lm_predict <- lm_fit %>%
+  augment(new_data = Boston) %>%
+  select(medv, .pred)
+
+lm_predict
+```
+```{r}
+ggplot(Boston, aes(x = lstat, y = medv)) +
+  geom_point() +
+  geom_abline(intercept = coef(lm_fit$fit)[1]
+              , slope = coef(lm_fit$fit)[2]) +
+  theme_minimal()
+```
+
+```{r}
+plot(lm_fit$fit)
+```
+
+## 3.6.3 Multiple Linear Regression
+
+```{r}
+lm_fit2 <- lm_spec %>%
+  fit(medv ~ lstat + age, data = Boston)
+```
+
+```{r}
+tidy(lm_fit2)
+```
+
+```{r}
+glance(lm_fit2)
+```
+
+```{r}
+lm_fit3 <- lm_spec %>%
+  fit(medv ~ ., data = Boston)
+```
+
+```{r}
+tidy(lm_fit3)
+```
+
+```{r}
+glance(lm_fit3)
+```
+
+```{r}
+car::vif(lm_fit3$fit)
+```
+
+```{r}
+lm_fit4 <- lm_spec %>%
+  fit(medv ~ . - age, data = Boston)
+
+summary(lm_fit4$fit)
+```
+## 3.6.4 Interaction Terms
+```{r}
+lm_fit5 <- lm_spec %>%
+  fit(medv ~ lstat * age, data = Boston)
+
+summary(lm_fit5$fit)
+```
+## 3.6.5 Non-linear Transformations of the Predictors
+```{r}
+lm_fit6 <- lm_spec %>%
+  fit(medv ~ lstat + I(lstat ^ 2), data = Boston)
+
+summary(lm_fit6$fit)
+```
+
+```{r}
+anova(lm_fit$fit, lm_fit6$fit)
+```
+```{r}
+plot(lm_fit6$fit)
+```
+
+```{r}
+lm_fit7 <- lm_spec %>%
+  fit(medv ~ poly(lstat, 5), data = Boston)
+
+summary(lm_fit7$fit)
+```
+## 3.6.6 Qualitative Predictors
+```{r}
+head(Carseats)
+```
+
+```{r}
+lm_fit8 <- lm_spec %>%
+  fit(Sales ~ . + Income:Advertising + Price:Age
+      , data = Carseats)
+
+summary(lm_fit8$fit)
+```
+
+```{r}
+interact_rec <- recipe(Sales ~ ., data = Carseats) %>%
+  step_dummy(all_nominal_predictors()) %>%
+  step_interact(~ Income:Advertising + Price:Age)
+
+lm_wf <- workflow() %>%
+  add_model(lm_spec) %>%
+  add_recipe(interact_rec)
+
+lm_fit9 <- lm_wf %>% fit(Carseats)
+
+summary(lm_fit9$fit$fit$fit)
+  
+```
+
+```{r}
+contrasts(Carseats$ShelveLoc)
+```
+
